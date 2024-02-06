@@ -39,7 +39,9 @@ def validate_sampling_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 class JobInput:
     def __init__(self, job):
-        self.llm_input = job.get("messages", job.get("prompt"))
+        self.conversation = job.get("conversation",False)
+        if self.conversation==False:
+            self.llm_input = job.get("messages", job.get("prompt"))
         self.stream = job.get("stream", False)
         self.batch_size = job.get("batch_size", DEFAULT_BATCH_SIZE)
         self.apply_chat_template = job.get("apply_chat_template", False)
