@@ -62,7 +62,18 @@ class vLLMEngine:
             yield batch
 
     async def generate_vllm(self, llm_input, validated_sampling_params, batch_size, stream, apply_chat_template, question, request_id: str) -> AsyncGenerator[dict, None]:
-        llm_input[-1]=" You are a survey collection bot Give a response and ask this question.Always ask this question Question:"+question+"Users response:"+llm_input[-1]["content"]
+        c=""" You are a survey collection bot your task is to ask a list of questions one by one.
+              Only focus on one question at a time.
+              Do not give a greeting at the start of the response.
+              Questions:\n
+        """
+        c=c+question
+        promp={
+                "role":"system",
+                "content":c
+                }
+        p=[promp]
+        llm_input=p+llm_input
         if apply_chat_template or isinstance(llm_input, list):
             llm_input = self.tokenizer.apply_chat_template(llm_input)
         validated_sampling_params = SamplingParams(**validated_sampling_params)
